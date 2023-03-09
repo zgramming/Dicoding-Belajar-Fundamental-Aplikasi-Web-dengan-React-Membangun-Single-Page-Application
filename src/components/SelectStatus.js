@@ -1,6 +1,10 @@
 import PropTypes from "prop-types";
+import { useContext } from "react";
+import LocaleContext from "../contexts/LocaleContext";
+import { localeData } from "../utils/constant";
 
 const SelectStatus = ({ onStatusChangeHandler }) => {
+  const localeContext = useContext(LocaleContext);
   return (
     <div className="flex flex-row justify-end">
       <select
@@ -10,11 +14,12 @@ const SelectStatus = ({ onStatusChangeHandler }) => {
           onStatusChangeHandler(e.target.value);
         }}
       >
-        <option value={`all`} selected>
-          Semua
+        <option value="active">
+          {localeData[localeContext.locale].active}
         </option>
-        <option value="archive">Arsip</option>
-        <option value="not_archive">Tidak Arsip</option>
+        <option value="archive">
+          {localeData[localeContext.locale].archive}
+        </option>
       </select>
     </div>
   );

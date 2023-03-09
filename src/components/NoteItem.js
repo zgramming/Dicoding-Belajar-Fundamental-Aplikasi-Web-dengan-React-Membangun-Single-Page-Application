@@ -3,6 +3,9 @@ import { FaArchive, FaUndo } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Card from "./Card";
 import PropTypes from "prop-types";
+import LocaleContext from "../contexts/LocaleContext";
+import { useContext } from "react";
+import { localeData } from "../utils/constant";
 
 const NoteItem = ({
   note,
@@ -11,6 +14,7 @@ const NoteItem = ({
   onArchiveHandler = undefined,
 }) => {
   const { title, body, createdAt, archived, id } = note;
+  const localeContext = useContext(LocaleContext);
 
   return (
     <Card className={`p-5`}>
@@ -19,7 +23,9 @@ const NoteItem = ({
           <div className="font-bold text-xl">{title}</div>
         </Link>
         {archived && (
-          <Card className={`bg-blue-500 p-1 text-white`}>Archived</Card>
+          <Card className={`!bg-purple-500 p-1 text-white`}>
+            {localeData[localeContext.locale].archive}
+          </Card>
         )}
       </div>
       <div className="text-gray-500">{body}</div>
@@ -36,7 +42,7 @@ const NoteItem = ({
           <button
             type="button"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={() => onArchiveHandler(id)}
+            onClick={() => onArchiveHandler(id, archived)}
           >
             {archived ? <FaUndo /> : <FaArchive />}
           </button>

@@ -1,110 +1,115 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Card from "../components/Card";
 import InputSearch from "../components/InputSearch";
 import NoteItem from "../components/NoteItem";
 import SelectStatus from "../components/SelectStatus";
 import {
-  archiveNote,
+  getActiveNotes,
   deleteNote,
-  getAllNotes,
-  getNote,
+  archiveNote,
   unarchiveNote,
-} from "../utils/local-data";
+  getArchivedNotes,
+} from "../utils/network-data";
 
-const HomePageWrapper = () => {
+const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const keyword = searchParams.get("keyword");
-  function changeSearchParams(keyword) {
+  const [keyword, setKeyword] = React.useState(
+    searchParams.get("keyword") ?? ""
+  );
+
+  const [notes, setNotes] = React.useState([]);
+  const [status, setStatus] = React.useState("active");
+
+  useEffect(() => {
+    getActiveNotes().then((response) => {
+      if (response.error) return;
+      setNotes(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (status === "active") {
+      getActiveNotes().then((response) => {
+        if (response.error) return;
+        setNotes(response.data);
+      });
+    }
+    if (status === "archive") {
+      getArchivedNotes().then((response) => {
+        if (response.error) return;
+        setNotes(response.data);
+      });
+    }
+    return () => {};
+  }, [status]);
+
+  function onKeywordChangeHandler(keyword) {
     setSearchParams({ keyword });
+    setKeyword(keyword);
   }
 
+  function onStatusChangeHandler(status) {
+    setStatus(status);
+  }
+
+  async function onDeleteHandler(id) {
+    await deleteNote(id);
+
+    setNotes((prevNotes) => [...prevNotes.filter((note) => note.id !== id)]);
+  }
+
+  async function onArchiveHandler(id, archived) {
+    if (archived) {
+      await unarchiveNote(id);
+      setNotes((prevNotes) => [
+        ...prevNotes.map((note) =>
+          note.id === id ? { ...note, archived: false } : note
+        ),
+      ]);
+    } else {
+      await archiveNote(id);
+      setNotes((prevNotes) => [
+        ...prevNotes.map((note) =>
+          note.id === id ? { ...note, archived: true } : note
+        ),
+      ]);
+    }
+  }
+
+  const items = notes.filter((note) => {
+    let isMatch =
+      keyword === ""
+        ? true
+        : note.title.toLocaleLowerCase().includes(keyword) ||
+          note.body.toLocaleLowerCase().includes(keyword);
+
+    if (status === "archive") return note.archived && isMatch;
+    if (status === "active") return !note.archived && isMatch;
+    return true;
+  });
+
   return (
-    <HomePage defaultKeyword={keyword} keywordChange={changeSearchParams} />
+    <div className="flex flex-col gap-5 py-5 mx-auto 2xl:max-w-4xl ">
+      <InputSearch keyword={keyword} onSearchHandler={onKeywordChangeHandler} />
+      <SelectStatus onStatusChangeHandler={onStatusChangeHandler} />
+      {items.length === 0 && <Card className={`p-5`}>Note Not Found</Card>}
+      {items.length > 0 && (
+        <div className="grid grid-cols-2 gap-5">
+          {items.map((note) => {
+            return (
+              <NoteItem
+                key={note.id}
+                note={note}
+                onDeleteHandler={onDeleteHandler}
+                onArchiveHandler={onArchiveHandler}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 
-class HomePage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      notes: getAllNotes(),
-      status: "all",
-      keyword: props.defaultKeyword || "",
-    };
-
-    this.onDeleteHandler = this.onDeleteHandler.bind(this);
-    this.onArchiveHandler = this.onArchiveHandler.bind(this);
-    this.onStatusChangeHandler = this.onStatusChangeHandler.bind(this);
-    this.onSearchHandler = this.onSearchHandler.bind(this); 
-  }
-
-  onSearchHandler(keyword) {
-    this.setState({ keyword });
-    this.props.keywordChange(keyword);
-  }
-
-  onDeleteHandler(id) {
-    deleteNote(id);
-    this.setState({ notes: getAllNotes() });
-  }
-
-  onArchiveHandler(id) {
-    const note = getNote(id);
-    if (note.archived) {
-      unarchiveNote(id);
-    } else {
-      archiveNote(id);
-    }
-
-    this.setState({ notes: getAllNotes() });
-  }
-
-  onStatusChangeHandler = (value) => {
-    this.setState({
-      status: value,
-    });
-  };
-
-  render() {
-    const items = this.state.notes.filter((note) => {
-      let isMatch =
-        this.state.keyword === ""
-          ? true
-          : note.title.toLocaleLowerCase().includes(this.state.keyword) ||
-            note.body.toLocaleLowerCase().includes(this.state.keyword);
-
-      if (this.state.status === "all") return true && isMatch;
-      if (this.state.status === "archive") return note.archived && isMatch;
-      if (this.state.status === "not_archive") return !note.archived && isMatch;
-      return true;
-    });
-
-    return (
-      <div className="flex flex-col gap-5 py-5 mx-auto 2xl:max-w-4xl">
-        <InputSearch
-          keyword={this.state.keyword}
-          onSearchHandler={this.onSearchHandler}
-        />
-        <SelectStatus onStatusChangeHandler={this.onStatusChangeHandler} />
-        {items.length === 0 && <Card className={`p-5`}>Note Not Found</Card>}
-        {items.length > 0 && (
-          <div className="grid grid-cols-2 gap-5">
-            {items.map((note) => {
-              return (
-                <NoteItem
-                  key={note.id}
-                  note={note}
-                  onDeleteHandler={this.onDeleteHandler}
-                  onArchiveHandler={this.onArchiveHandler}
-                />
-              );
-            })}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
-
-export default HomePageWrapper;
+export default HomePage;
