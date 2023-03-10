@@ -70,14 +70,14 @@ const LoginPage = () => {
         <form onSubmit={onSubmitHandler} className="flex flex-col gap-5">
           <input
             type="email"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2"
             placeholder="Email"
             value={email}
             onChange={onEmailHandler}
           />
           <input
             type="password"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2"
             placeholder="Password"
             value={password}
             onChange={onPasswordHandler}
@@ -89,7 +89,7 @@ const LoginPage = () => {
           ) : (
             <button
               type="submit"
-              class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-900"
+              className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-900"
             >
               Login
             </button>
