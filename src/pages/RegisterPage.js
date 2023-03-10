@@ -28,7 +28,7 @@ const RegisterPage = () => {
         return;
       }
 
-      const { data, status } = await axios.post(`${baseAPIURL}/register`, {
+      await axios.post(`${baseAPIURL}/register`, {
         name,
         email,
         password,

@@ -8,7 +8,7 @@ const InputSearch = ({ keyword, onSearchHandler }) => {
   return (
     <input
       type="text"
-      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2"
+      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2"
       placeholder={`${localeData[localeContext.locale].placeholder_search}`}
       value={keyword}
       onChange={(e) => onSearchHandler(e.target.value)}

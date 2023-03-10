@@ -5,7 +5,6 @@ import Card from "../components/Card";
 import useInput from "../hooks/useInput";
 import { addNote } from "../utils/network-data";
 import { MoonLoader } from "react-spinners";
-import { baseAPIURL } from "../utils/constant";
 import AuthContext from "../contexts/AuthContext";
 
 const AddPage = () => {
@@ -19,19 +18,6 @@ const AddPage = () => {
     event.preventDefault();
     try {
       setIsLoading(true);
-      await axios.post(
-        `${baseAPIURL}/notes`,
-        {
-          title,
-          body,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${context.token}`,
-          },
-        }
-      );
-
       await addNote({ body, title });
       navigate("/");
     } catch (error) {
