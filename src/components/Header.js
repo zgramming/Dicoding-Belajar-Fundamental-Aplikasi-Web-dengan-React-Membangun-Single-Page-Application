@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { FiHome, FiLogOut, FiMoon, FiPlusCircle, FiSun } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import LocaleContext from "../contexts/LocaleContext";
 import ThemeContext from "../contexts/ThemeContext";
@@ -38,6 +38,7 @@ const ToggleTheme = () => {
 const Header = () => {
   const authContext = useContext(AuthContext);
   const localeContext = useContext(LocaleContext);
+  const navigate = useNavigate();
 
   return (
     <div className="h-20 bg-green-600">
@@ -63,6 +64,7 @@ const Header = () => {
                 onClick={() => {
                   authContext.unsetAuthUser();
                   authContext.unsetToken();
+                  navigate("/login")
                 }}
               >
                 <FiLogOut size={20} />
