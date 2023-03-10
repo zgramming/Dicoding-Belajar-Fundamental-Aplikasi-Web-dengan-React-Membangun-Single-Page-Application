@@ -9,7 +9,7 @@ const SelectStatus = ({ onStatusChangeHandler }) => {
     <div className="flex flex-row justify-end">
       <select
         id="countries"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2"
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2"
         onChange={(e) => {
           onStatusChangeHandler(e.target.value);
         }}
